@@ -16,9 +16,9 @@ export interface ProvinceData {
 }
 
 export const STORE_ADDRESS = 'Rangeli-7, Morang, Nepal';
-export const STORE_PHONE = '+9779811313666';
-export const STORE_PHONE_DISPLAY = '+977 9811313666';
-export const STORE_WHATSAPP_URL = 'https://wa.me/9779811313666?text=Namaste%20Puja%20Collection%2C%20I%20would%20like%20to%20inquire%20about%20your%20ethnic%20wear%20collection.';
+export const STORE_PHONE = '+9779767784053';
+export const STORE_PHONE_DISPLAY = '+977 9767784053';
+export const STORE_WHATSAPP_URL = 'https://wa.me/9779767784053?text=Namaste%20Puja%20Collection%2C%20I%20would%20like%20to%20inquire%20about%20your%20ethnic%20wear%20collection.';
 
 export const NEPAL_PROVINCES: ProvinceData[] = [
   {

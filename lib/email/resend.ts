@@ -110,7 +110,7 @@ export function renderEmailOtpTemplate(otpCode: string, customerName?: string): 
         
         <div class="footer">
           Puja Collection Boutique · Central Store, Rangeli-7, Morang, Nepal<br>
-          Direct Inquiries / WhatsApp: +977 9811313666
+          Direct Inquiries / WhatsApp: +977 9767784053
         </div>
       </div>
     </body>

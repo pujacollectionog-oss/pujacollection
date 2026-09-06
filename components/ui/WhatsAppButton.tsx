@@ -35,7 +35,7 @@ export function WhatsAppButton() {
         rel="noopener noreferrer"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        aria-label="Chat with Puja Collection on WhatsApp (+977 9811313666)"
+        aria-label={`Chat with Puja Collection on WhatsApp (${STORE_PHONE_DISPLAY})`}
         className="relative w-14 h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white flex items-center justify-center shadow-[0_8px_24px_rgba(37,211,102,0.4)] hover:shadow-[0_12px_32px_rgba(37,211,102,0.6)] hover:scale-105 active:scale-95 transition-all duration-200"
       >
         {/* Pulsing ring */}

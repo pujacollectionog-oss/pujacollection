@@ -348,7 +348,7 @@ export function CheckoutEngine() {
                     maxLength={10}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                    placeholder="9811313666"
+                    placeholder="9767784053"
                     className="flex-1 p-3 text-xs font-sans font-mono rounded-r-xl border border-[rgba(226,190,194,0.8)] focus:border-[#a00041] outline-none"
                   />
                 </div>

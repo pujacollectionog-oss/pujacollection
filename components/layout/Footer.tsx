@@ -26,7 +26,7 @@ const FOOTER_LINKS = {
   'Customer Care & Services': [
     { label: 'Live Order Tracking', href: '/track-order' },
     { label: 'All-Nepal Free Delivery', href: '/checkout' },
-    { label: 'WhatsApp Support (+977 9811313666)', href: STORE_WHATSAPP_URL },
+    { label: `WhatsApp Support (${STORE_PHONE_DISPLAY})`, href: STORE_WHATSAPP_URL },
     { label: 'Heritage & Weaving Stories', href: '/heritage' },
     { label: '7-Day Easy Exchange Policy', href: '/track-order' },
   ],
@@ -86,7 +86,7 @@ export function Footer() {
               </p>
               <p className="flex items-center gap-2">
                 <span>📞</span>
-                <a href="tel:+9779811313666" className="hover:text-[#e9c349] transition-colors font-mono">
+                <a href={`tel:${STORE_PHONE}`} className="hover:text-[#e9c349] transition-colors font-mono">
                   {STORE_PHONE_DISPLAY}
                 </a>
               </p>
