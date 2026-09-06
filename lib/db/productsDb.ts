@@ -8,7 +8,7 @@ export async function getAllProductsFromDb(): Promise<MockProduct[]> {
       orderBy: { createdAt: 'desc' },
     });
 
-    return products.map((p) => ({
+    return products.map((p: any) => ({
       id: p.id,
       name: p.name,
       slug: p.slug,
@@ -30,14 +30,14 @@ export async function getAllProductsFromDb(): Promise<MockProduct[]> {
       customizationFee: p.customizationFee,
       isFeatured: p.isFeatured,
       badge: p.badge || undefined,
-      tags: p.tags ? p.tags.split(',').map((t) => t.trim()) : [],
-      images: p.images.map((img) => ({
+      tags: p.tags ? p.tags.split(',').map((t: string) => t.trim()) : [],
+      images: (p.images || []).map((img: any) => ({
         url: img.url,
         altText: img.altText,
         isPrimary: img.isPrimary,
         macroZoomUrl: img.macroZoomUrl || undefined,
       })),
-      variants: p.variants.map((v) => ({
+      variants: (p.variants || []).map((v: any) => ({
         id: v.id,
         title: v.title,
         size: v.size || undefined,
@@ -83,14 +83,14 @@ export async function getProductBySlugFromDb(slug: string): Promise<MockProduct 
       customizationFee: p.customizationFee,
       isFeatured: p.isFeatured,
       badge: p.badge || undefined,
-      tags: p.tags ? p.tags.split(',').map((t) => t.trim()) : [],
-      images: p.images.map((img) => ({
+      tags: p.tags ? p.tags.split(',').map((t: string) => t.trim()) : [],
+      images: (p.images || []).map((img: any) => ({
         url: img.url,
         altText: img.altText,
         isPrimary: img.isPrimary,
         macroZoomUrl: img.macroZoomUrl || undefined,
       })),
-      variants: p.variants.map((v) => ({
+      variants: (p.variants || []).map((v: any) => ({
         id: v.id,
         title: v.title,
         size: v.size || undefined,
@@ -113,7 +113,7 @@ export async function getProductsByCategoryFromDb(categorySlug: string): Promise
       orderBy: { createdAt: 'desc' },
     });
 
-    return products.map((p) => ({
+    return products.map((p: any) => ({
       id: p.id,
       name: p.name,
       slug: p.slug,
@@ -135,14 +135,14 @@ export async function getProductsByCategoryFromDb(categorySlug: string): Promise
       customizationFee: p.customizationFee,
       isFeatured: p.isFeatured,
       badge: p.badge || undefined,
-      tags: p.tags ? p.tags.split(',').map((t) => t.trim()) : [],
-      images: p.images.map((img) => ({
+      tags: p.tags ? p.tags.split(',').map((t: string) => t.trim()) : [],
+      images: (p.images || []).map((img: any) => ({
         url: img.url,
         altText: img.altText,
         isPrimary: img.isPrimary,
         macroZoomUrl: img.macroZoomUrl || undefined,
       })),
-      variants: p.variants.map((v) => ({
+      variants: (p.variants || []).map((v: any) => ({
         id: v.id,
         title: v.title,
         size: v.size || undefined,
