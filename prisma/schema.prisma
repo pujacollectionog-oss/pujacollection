@@ -1,0 +1,126 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id                String           @id @default(cuid())
+  name              String
+  slug              String           @unique
+  garmentType       String           // SAREE, LEHENGA, KURTI_AND_SUIT, DUPATTA_AND_ACCESSORIES
+  categorySlug      String           // sarees, lehengas, kurtis-suits
+  subCategorySlug   String?
+  description       String
+  fabricDetails     String
+  fabricType        String           // Pure Katan Silk, Mulberry Silk, Velvet, etc.
+  craftDetails      String
+  weaveTechnique    String?
+  careInstructions  String
+  silkMarkCertified Boolean          @default(false)
+  handloomCertified Boolean          @default(true)
+  occasion          String           @default("Bridal")
+  basePrice         Int              // in NPR
+  compareAtPrice    Int?             // in NPR
+  isCustomizable    Boolean          @default(false)
+  customizationFee  Int              @default(0)
+  isFeatured        Boolean          @default(false)
+  badge             String?          // New, Bestseller, Heritage
+  tags              String           // Comma-separated tags
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  images            ProductImage[]
+  variants          ProductVariant[]
+}
+
+model ProductImage {
+  id           String   @id @default(cuid())
+  url          String
+  altText      String
+  isPrimary    Boolean  @default(false)
+  macroZoomUrl String?
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductVariant {
+  id            String   @id @default(cuid())
+  title         String
+  size          String?
+  colorName     String?
+  colorHex      String?
+  stockQuantity Int      @default(5)
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id             String      @id // e.g. PUJA-2026-0842
+  customerName   String
+  customerEmail  String
+  customerPhone  String
+  province       String
+  district       String
+  municipality   String
+  ward           String
+  toleAndStreet  String
+  landmark       String?
+  subtotalNPR    Int
+  discountNPR    Int         @default(0)
+  couponCode     String?
+  deliveryFeeNPR Int         @default(0)
+  totalAmountNPR Int
+  paymentMethod  String      // FONEPAY, COD, ESEWA, KHALTI
+  paymentStatus  String      // PAID, COD_VERIFIED, PENDING
+  status         String      // CONFIRMED, QUALITY_CHECK, PACKAGING, OUT_FOR_DELIVERY, DELIVERED
+  courierPartner String?     // Pathao Express Nepal, Nepal Post, etc.
+  consignmentId  String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  items          OrderItem[]
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  variantId   String?
+  name        String
+  price       Int      // in NPR
+  image       String
+  quantity    Int
+  size        String?
+  colorName   String?
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String   @unique
+  city      String?
+  province  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Coupon {
+  id             String    @id @default(cuid())
+  code           String    @unique // e.g. BRIDAL5000, PUJA10, FESTIVE2026
+  description    String?   // e.g. "Flat NPR 5,000 off on bridal lehengas"
+  discountType   String    // "PERCENTAGE" | "FLAT_NPR"
+  discountValue  Int       // e.g. 10 (for 10%) or 5000 (for NPR 5000)
+  minOrderAmount Int       @default(0) // Minimum cart value in NPR
+  maxDiscountNPR Int?      // Optional cap for percentage discounts
+  usageLimit     Int?      // Total times this coupon can be used
+  usedCount      Int       @default(0)
+  isActive       Boolean   @default(true)
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}

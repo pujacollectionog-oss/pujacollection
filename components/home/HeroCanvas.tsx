@@ -1,0 +1,114 @@
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '../ui/Button';
+
+export function HeroCanvas() {
+  return (
+    <section
+      className="relative min-h-screen flex items-center overflow-hidden bg-[#1a1c1b]"
+      aria-label="Hero — Puja Collection"
+    >
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <Image
+          src="/images/hero-section.png"
+          alt="Puja Collection — Luxury Indian Ethnic Wear in Nepal"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[rgba(26,28,27,0.92)] via-[rgba(26,28,27,0.60)] to-[rgba(26,28,27,0.15)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(26,28,27,0.7)] via-transparent to-transparent" />
+      </div>
+
+      {/* Decorative gold lines */}
+      <div className="absolute top-0 left-16 w-px h-32 bg-gradient-to-b from-transparent via-[rgba(233,195,73,0.4)] to-transparent" />
+      <div className="absolute bottom-0 right-16 w-px h-32 bg-gradient-to-b from-transparent via-[rgba(233,195,73,0.4)] to-transparent" />
+
+      {/* Content */}
+      <div className="relative container-luxury w-full py-32 md:py-0">
+        <div className="max-w-2xl">
+
+          {/* Eyebrow with decorative flourish */}
+          <div
+            className="flex items-center gap-3 mb-5 animate-fade-in-up"
+            style={{ animationDelay: '0.1s' }}
+          >
+            <div className="h-px w-8 bg-[#f59e0b]" />
+            <span className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-[#fef08a] flex items-center gap-2">
+              <span>❖</span>
+              Nepal&apos;s Finest Indian Ethnic Wear
+            </span>
+          </div>
+
+          {/* Majestic Editorial Headline */}
+          <h1
+            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-medium leading-[1.02] tracking-[-0.01em] mb-6 animate-fade-in-up"
+            style={{ animationDelay: '0.2s' }}
+          >
+            Where Every
+            <br />
+            <span className="italic font-normal text-[#fed65b]">Thread Tells</span>
+            <br />
+            a Story.
+          </h1>
+
+          {/* Subtitle */}
+          <p
+            className="font-sans text-base md:text-lg text-slate-200 leading-relaxed max-w-lg mb-10 font-normal animate-fade-in-up"
+            style={{ animationDelay: '0.3s' }}
+          >
+            Mastercrafted Banarasi silks, bridal lehengas &amp; festive ensembles — woven for grand celebrations, weddings, and every cherished memory.
+          </p>
+
+          {/* CTAs */}
+          <div
+            className="flex flex-wrap gap-4 animate-fade-in-up"
+            style={{ animationDelay: '0.4s' }}
+          >
+            <Link
+              href="/lehengas"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl font-sans text-xs font-bold uppercase tracking-[0.16em] bg-[#b45309] text-white hover:bg-[#92400e] transition-all shadow-lg hover:shadow-amber-900/30 hover:scale-[1.02]"
+            >
+              Explore Lehengas →
+            </Link>
+            <Link
+              href="/sarees"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl font-sans text-xs font-bold uppercase tracking-[0.16em] text-white border border-amber-400/60 hover:border-amber-400 hover:bg-amber-400/10 transition-all backdrop-blur-sm"
+            >
+              Explore Sarees
+            </Link>
+          </div>
+
+          {/* Stats */}
+          <div
+            className="flex gap-8 mt-14 animate-fade-in-up"
+            style={{ animationDelay: '0.55s' }}
+          >
+            {[
+              { value: '500+', label: 'Curated Pieces' },
+              { value: '4.9★', label: 'Customer Rating' },
+              { value: '7', label: 'Provinces Delivered' },
+            ].map((stat) => (
+              <div key={stat.label} className="flex flex-col">
+                <span className="font-display text-2xl font-bold text-white">{stat.value}</span>
+                <span className="font-sans text-xs text-[rgba(241,241,238,0.6)] mt-0.5">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: '1s' }}>
+        <span className="font-sans text-xs text-white/40 uppercase tracking-widest">Scroll</span>
+        <div className="w-px h-10 bg-gradient-to-b from-white/20 to-transparent" />
+      </div>
+    </section>
+  );
+}
