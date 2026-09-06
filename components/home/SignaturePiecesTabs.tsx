@@ -51,16 +51,19 @@ export function SignaturePiecesTabs() {
     >
       <div className="container-luxury">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-6 sm:mb-10">
           <div>
+            <span className="label-sm text-[#be123c] block mb-1 font-bold tracking-widest">
+              Exclusive Showcase
+            </span>
             <h2 id="signature-heading" className="headline-lg text-[#0f172a]">
               Signature Pieces
             </h2>
           </div>
 
-          {/* Tab Pills */}
+          {/* Tab Pills - smooth edge-to-edge scroll on mobile */}
           <div
-            className="flex gap-1 bg-[#f4f4f1] p-1 rounded-xl overflow-x-auto scrollbar-none"
+            className="flex gap-1.5 bg-[#f4f4f1] p-1.5 rounded-2xl overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-1.5"
             role="tablist"
             aria-label="Product collections"
           >
@@ -73,7 +76,7 @@ export function SignaturePiecesTabs() {
                 aria-controls={`tabpanel-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
                 className={[
-                  'relative px-4 py-2 rounded-lg font-sans text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer',
+                  'relative px-3.5 sm:px-4 py-2 rounded-xl font-sans text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0',
                   activeTab === tab.id
                     ? 'bg-[#be123c] text-white shadow-sm'
                     : 'text-[#5a4044] hover:text-[#1a1c1b]',
@@ -95,7 +98,7 @@ export function SignaturePiecesTabs() {
           role="tabpanel"
           id={`tabpanel-${activeTab}`}
           aria-labelledby={`tab-${activeTab}`}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
         >
           {currentProducts.length > 0 ? (
             currentProducts.map((product, i) => (

@@ -38,12 +38,12 @@ export function HeritageStory() {
       <div className="relative container-luxury">
 
         {/* Layout: image left, text right */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
 
           {/* Image column */}
           <div className="relative order-2 lg:order-1">
             {/* Main image */}
-            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden max-w-md mx-auto lg:mx-0">
+            <div className="relative aspect-[4/3] sm:aspect-[3/4] rounded-2xl overflow-hidden max-w-md mx-auto lg:mx-0">
               <Image
                 src="/images/heritage-artisan.jpg"
                 alt="Master weaver creating a Banarasi silk saree on a traditional loom"
@@ -56,17 +56,17 @@ export function HeritageStory() {
             </div>
 
             {/* Floating stat card */}
-            <div className="absolute -bottom-4 -right-4 lg:right-0 glass-dark rounded-xl p-4 shadow-xl border border-[rgba(233,195,73,0.2)] max-w-[160px]">
-              <p className="font-display text-2xl font-bold text-[#e9c349]">2,000+</p>
-              <p className="font-sans text-xs text-[rgba(241,241,238,0.7)] mt-0.5">Years of Craft Heritage</p>
+            <div className="absolute bottom-3 right-3 lg:-bottom-4 lg:-right-4 glass-dark rounded-xl p-3 sm:p-4 shadow-xl border border-[rgba(233,195,73,0.2)] max-w-[140px] sm:max-w-[160px]">
+              <p className="font-display text-xl sm:text-2xl font-bold text-[#e9c349]">2,000+</p>
+              <p className="font-sans text-[10px] sm:text-xs text-[rgba(241,241,238,0.7)] mt-0.5 leading-tight">Years of Craft Heritage</p>
             </div>
           </div>
 
           {/* Text column */}
-          <div className="order-1 lg:order-2 flex flex-col gap-8">
+          <div className="order-1 lg:order-2 flex flex-col gap-5 sm:gap-8">
             {/* Eyebrow */}
-            <div className="flex items-center gap-3">
-              <div className="h-px w-10 bg-[#e9c349]" />
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="h-px w-8 sm:w-10 bg-[#e9c349]" />
               <span className="label-sm text-[#e9c349]">Our Heritage</span>
             </div>
 
@@ -75,23 +75,23 @@ export function HeritageStory() {
               <span className="text-gold-shimmer">Threads</span>
             </h2>
 
-            <p className="font-sans text-base text-[rgba(241,241,238,0.75)] leading-relaxed">
+            <p className="font-sans text-sm sm:text-base text-[rgba(241,241,238,0.75)] leading-relaxed">
               At Puja Collection, we travel to India&apos;s most celebrated textile hubs to bring you garments that carry the soul of their origins. Every piece is not just clothing — it is a chapter in a story thousands of years old.
             </p>
 
             {/* City stories */}
-            <div className="space-y-5">
+            <div className="space-y-3.5 sm:space-y-5">
               {WEAVER_STORIES.map((story, i) => (
                 <div
                   key={story.city}
-                  className="flex gap-4 border-l-2 pl-4 transition-colors hover:border-[#e9c349]"
+                  className="flex gap-3 sm:gap-4 border-l-2 pl-3.5 sm:pl-4 transition-colors hover:border-[#e9c349]"
                   style={{ borderColor: i === 0 ? '#e9c349' : 'rgba(233,195,73,0.2)' }}
                 >
                   <div>
-                    <p className="font-display text-base font-semibold text-white">
+                    <p className="font-display text-sm sm:text-base font-semibold text-white">
                       {story.city} — <span className="text-[#e9c349]">{story.craft}</span>
                     </p>
-                    <p className="font-sans text-sm text-[rgba(241,241,238,0.6)] mt-1 leading-relaxed">
+                    <p className="font-sans text-xs sm:text-sm text-[rgba(241,241,238,0.6)] mt-0.5 sm:mt-1 leading-relaxed">
                       {story.desc}
                     </p>
                   </div>
@@ -100,10 +100,10 @@ export function HeritageStory() {
             </div>
 
             {/* CTA */}
-            <div className="flex items-center gap-4 pt-2">
+            <div className="flex items-center gap-4 pt-1 sm:pt-2">
               <Link
                 href="/heritage"
-                className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-[#e9c349] border-b border-[rgba(233,195,73,0.4)] pb-0.5 hover:border-[#e9c349] transition-colors"
+                className="inline-flex items-center gap-2 font-sans text-xs sm:text-sm font-semibold text-[#e9c349] border-b border-[rgba(233,195,73,0.4)] pb-0.5 hover:border-[#e9c349] transition-colors"
               >
                 Read Our Full Story
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

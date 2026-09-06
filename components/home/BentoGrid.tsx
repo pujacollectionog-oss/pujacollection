@@ -76,13 +76,12 @@ export function BentoGrid() {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-5" style={{ gridTemplateRows: 'auto auto' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3.5 sm:gap-4 lg:gap-5">
           {BENTO_TILES.map((tile) => (
             <Link
               key={tile.id}
               href={tile.href}
-              className={`bento-tile group block ${tile.span} ${tile.tall ? 'aspect-[4/5] md:aspect-auto' : 'aspect-[4/3]'}`}
-              style={{ minHeight: tile.tall ? '520px' : '280px' }}
+              className={`bento-tile group block ${tile.span} ${tile.tall ? 'aspect-[4/5] sm:aspect-auto min-h-[360px] sm:min-h-[420px] lg:min-h-[520px]' : 'aspect-[16/10] sm:aspect-[4/3] min-h-[200px] sm:min-h-[240px] lg:min-h-[280px]'}`}
               aria-label={tile.title}
             >
               {/* Image */}
@@ -108,29 +107,29 @@ export function BentoGrid() {
               />
 
               {/* Content */}
-              <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
+              <div className="absolute inset-0 p-4 sm:p-6 md:p-8 flex flex-col justify-end">
                 {/* Category eyebrow */}
                 <div
-                  className="h-0.5 w-8 mb-3 transition-all duration-300 group-hover:w-14"
+                  className="h-0.5 w-6 sm:w-8 mb-2 sm:mb-3 transition-all duration-300 group-hover:w-14"
                   style={{ backgroundColor: tile.accentColor }}
                 />
 
-                <h3 className={`font-display font-bold text-white mb-1 ${tile.tall ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
+                <h3 className={`font-display font-bold text-white mb-1 leading-tight ${tile.tall ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-lg sm:text-xl md:text-2xl'}`}>
                   {tile.title}
                 </h3>
-                <p className="font-sans text-sm text-slate-200 mb-1">
+                <p className="font-sans text-xs sm:text-sm text-slate-200 mb-1 leading-snug">
                   {tile.subtitle}
                 </p>
                 {tile.tall && (
-                  <p className="font-sans text-xs text-slate-400 mb-5">
+                  <p className="font-sans text-[11px] sm:text-xs text-slate-300 mb-3 sm:mb-5 line-clamp-2">
                     {tile.description}
                   </p>
                 )}
 
-                {/* CTA */}
-                <div className="flex items-center gap-2 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                {/* CTA - visible on mobile, animated on desktop */}
+                <div className="flex items-center gap-1.5 sm:gap-2 opacity-100 md:opacity-0 md:translate-y-2 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-300">
                   <span
-                    className="font-sans text-xs font-bold uppercase tracking-widest"
+                    className="font-sans text-[11px] sm:text-xs font-bold uppercase tracking-widest"
                     style={{ color: tile.accentColor }}
                   >
                     {tile.cta}
@@ -145,7 +144,7 @@ export function BentoGrid() {
         </div>
 
         {/* Craft badges row with 7-Day Exchange */}
-        <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="mt-6 sm:mt-10 grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
           {[
             { icon: '🔄', title: '7-Day Exchange', desc: 'Hassle-free size & style exchange' },
             { icon: '🕊️', title: '100% Pure Silks', desc: 'Authentic handloom & bridal wear' },
@@ -154,12 +153,12 @@ export function BentoGrid() {
           ].map((badge) => (
             <div
               key={badge.title}
-              className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-[#b45309] transition-all hover:shadow-md"
+              className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:border-[#b45309] transition-all hover:shadow-md"
             >
-              <span className="text-2xl flex-shrink-0">{badge.icon}</span>
+              <span className="text-xl sm:text-2xl flex-shrink-0">{badge.icon}</span>
               <div>
-                <p className="font-sans text-xs font-bold text-[#0f172a]">{badge.title}</p>
-                <p className="font-sans text-xs text-[#475569] mt-0.5">{badge.desc}</p>
+                <p className="font-sans text-[11px] sm:text-xs font-bold text-[#0f172a] leading-tight">{badge.title}</p>
+                <p className="font-sans text-[10px] sm:text-xs text-[#475569] mt-0.5 leading-snug">{badge.desc}</p>
               </div>
             </div>
           ))}

@@ -149,14 +149,14 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Badge */}
         {product.badge && (
-          <span className="absolute top-3 left-3 label-sm bg-[#be123c] text-white px-2.5 py-1 rounded-full z-10 shadow-sm">
+          <span className="absolute top-2.5 left-2.5 text-[9px] sm:text-[10px] font-bold tracking-wider uppercase bg-[#be123c] text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full z-10 shadow-sm">
             {product.badge}
           </span>
         )}
 
         {/* Discount badge */}
         {discountPct && (
-          <span className="absolute top-3 right-12 label-sm bg-[#b45309] text-white px-2 py-1 rounded-full z-10 shadow-sm">
+          <span className="absolute top-2.5 right-11 sm:right-12 text-[9px] sm:text-[10px] font-bold uppercase bg-[#b45309] text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full z-10 shadow-sm">
             -{discountPct}%
           </span>
         )}
@@ -165,35 +165,36 @@ export function ProductCard({ product }: ProductCardProps) {
         <button
           onClick={handleWishlist}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-sm transition-all duration-200 hover:scale-110"
+          className="absolute top-2.5 right-2.5 z-10 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-sm transition-all duration-200 hover:scale-110"
         >
           <svg
-            width="16"
-            height="16"
+            width="14"
+            height="14"
             viewBox="0 0 24 24"
             fill={wishlisted ? '#be123c' : 'none'}
             stroke={wishlisted ? '#be123c' : '#0f766e'}
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className="sm:w-4 sm:h-4"
           >
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
 
         {/* Buy Now + Add to Cart Overlay */}
-        <div className="absolute inset-x-0 bottom-0 p-2.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-20 bg-gradient-to-t from-black/70 via-black/35 to-transparent pt-6">
-          <div className="flex gap-2">
+        <div className="absolute inset-x-0 bottom-0 p-2 sm:p-2.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-20 bg-gradient-to-t from-black/75 via-black/40 to-transparent pt-6">
+          <div className="flex gap-1.5 sm:gap-2">
             <button
               onClick={handleBuyNow}
-              className="flex-1 py-2 px-2.5 text-[11px] font-bold uppercase tracking-wider bg-[#b45309] text-white rounded-xl hover:bg-[#92400e] transition-all shadow-md flex items-center justify-center gap-1 cursor-pointer"
+              className="flex-1 py-1.5 sm:py-2 px-1.5 sm:px-2.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-[#b45309] text-white rounded-lg sm:rounded-xl hover:bg-[#92400e] transition-all shadow-md flex items-center justify-center gap-1 cursor-pointer"
             >
               <span>⚡</span>
-              <span>Buy Now</span>
+              <span>Buy</span>
             </button>
             <button
               onClick={handleAddToCart}
-              className="flex-1 py-2 px-2.5 text-[11px] font-bold uppercase tracking-wider bg-[#be123c] text-white rounded-xl hover:bg-[#9f1239] transition-all shadow-md flex items-center justify-center gap-1 cursor-pointer"
+              className="flex-1 py-1.5 sm:py-2 px-1.5 sm:px-2.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-[#be123c] text-white rounded-lg sm:rounded-xl hover:bg-[#9f1239] transition-all shadow-md flex items-center justify-center gap-1 cursor-pointer"
             >
               <span>+ Bag</span>
             </button>
@@ -202,43 +203,43 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Info */}
-      <div className="flex flex-col flex-1 p-3.5 sm:p-4 justify-between">
+      <div className="flex flex-col flex-1 p-2.5 sm:p-4 justify-between">
         <div>
           {/* Fabric / Type */}
-          <div className="flex items-center justify-between text-[11px] text-[#5a4044] mb-1">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-[#5a4044] mb-1">
             <span className="capitalize">{product.categorySlug.replace('-', ' ')}</span>
             {images.length > 1 && (
-              <span className="text-[10px] font-mono text-slate-400">
-                📷 {images.length} photos
+              <span className="text-[9px] sm:text-[10px] font-mono text-slate-400">
+                📷 {images.length}
               </span>
             )}
           </div>
 
           {/* Name */}
-          <h3 className="font-display text-sm font-semibold text-[#1a1c1b] group-hover:text-[#be123c] transition-colors line-clamp-2 leading-snug">
+          <h3 className="font-display text-xs sm:text-sm font-semibold text-[#1a1c1b] group-hover:text-[#be123c] transition-colors line-clamp-2 leading-snug">
             {product.name}
           </h3>
 
           {/* Fabric notes */}
-          <p className="font-sans text-[11px] text-[#8e6f74] mt-1 line-clamp-1">
+          <p className="font-sans text-[10px] sm:text-[11px] text-[#8e6f74] mt-0.5 sm:mt-1 line-clamp-1">
             {product.fabricDetails}
           </p>
         </div>
 
         {/* Pricing & Free Delivery tag */}
-        <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-baseline justify-between">
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-mono text-sm font-bold text-[#be123c]">
+        <div className="mt-2 sm:mt-3 pt-2 sm:pt-2.5 border-t border-slate-100 flex flex-wrap items-baseline justify-between gap-1">
+          <div className="flex items-baseline gap-1 sm:gap-1.5">
+            <span className="font-mono text-xs sm:text-sm font-bold text-[#be123c]">
               {formatPrice(product.basePrice)}
             </span>
             {product.compareAtPrice && (
-              <span className="font-mono text-[11px] text-[#8e6f74] line-through">
+              <span className="font-mono text-[10px] sm:text-[11px] text-[#8e6f74] line-through">
                 {formatPrice(product.compareAtPrice)}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
-            Free Nepal Delivery
+          <span className="text-[9px] sm:text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded flex-shrink-0">
+            Free Delivery
           </span>
         </div>
       </div>
