@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { STORE_ADDRESS, STORE_PHONE_DISPLAY, STORE_WHATSAPP_URL } from '@/lib/nepal-address';
+import { STORE_ADDRESS, STORE_PHONE, STORE_PHONE_DISPLAY, STORE_WHATSAPP_URL } from '@/lib/nepal-address';
 
 const FOOTER_LINKS = {
   Sarees: [
