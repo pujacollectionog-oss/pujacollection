@@ -69,7 +69,7 @@ export function ProductPurchaseClient({ product }: ProductPurchaseClientProps) {
   return (
     <div className="space-y-6">
       {/* Category & Badge */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="label-sm text-[#055858]">
           {product.garmentType.replace(/_/g, ' ').replace('AND', '&')}
         </span>
@@ -81,21 +81,23 @@ export function ProductPurchaseClient({ product }: ProductPurchaseClientProps) {
       </div>
 
       {/* Title & Ratings */}
-      <div>
-        <h1 className="font-display text-2xl md:text-3xl font-bold text-[#1a1c1b] leading-tight">
+      <div className="space-y-2">
+        <h1 className="font-display text-2xl md:text-3xl font-bold text-[#1a1c1b] leading-tight break-words">
           {product.name}
         </h1>
-        <div className="flex items-center gap-3 mt-2">
-          <div className="flex text-[#fed65b] text-sm">★★★★★</div>
-          <span className="text-xs font-sans font-semibold text-[#1a1c1b]">4.9 / 5.0</span>
-          <span className="text-xs font-sans text-[#8e6f74]">(48 Verified Reviews)</span>
-          <span className="text-xs text-[#8e6f74]">·</span>
-          <span className="text-xs font-sans text-[#735c00]">SKU: {product.id.toUpperCase()}</span>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+          <div className="flex text-[#fed65b] text-sm flex-shrink-0">★★★★★</div>
+          <span className="font-sans font-semibold text-[#1a1c1b] whitespace-nowrap">4.9 / 5.0</span>
+          <span className="font-sans text-[#8e6f74] whitespace-nowrap">(48 Verified Reviews)</span>
+          <span className="text-[#8e6f74] hidden sm:inline">·</span>
+          <span className="font-sans text-[#735c00] text-[11px] sm:text-xs truncate max-w-[220px] sm:max-w-none block sm:inline">
+            SKU: {product.id.toUpperCase()}
+          </span>
         </div>
       </div>
 
       {/* Pricing in NPR */}
-      <div className="flex items-baseline gap-3.5 pb-4 border-b border-[rgba(226,190,194,0.4)]">
+      <div className="flex flex-wrap items-baseline gap-2 sm:gap-3.5 pb-4 border-b border-[rgba(226,190,194,0.4)]">
         <span className="font-display text-2xl md:text-3xl font-bold text-[#a00041]">
           {formatPrice(product.basePrice)}
         </span>
@@ -105,14 +107,14 @@ export function ProductPurchaseClient({ product }: ProductPurchaseClientProps) {
           </span>
         )}
         {discountPct && (
-          <span className="text-xs font-bold text-[#735c00] bg-[rgba(115,92,0,0.1)] px-2 py-0.5 rounded">
+          <span className="text-xs font-bold text-[#735c00] bg-[rgba(115,92,0,0.1)] px-2 py-0.5 rounded whitespace-nowrap">
             Save {discountPct}% ({formatPrice(savings!)})
           </span>
         )}
       </div>
 
       {/* Description Excerpt */}
-      <p className="font-sans text-xs md:text-sm text-[#5a4044] leading-relaxed">
+      <p className="font-sans text-xs md:text-sm text-[#5a4044] leading-relaxed break-words">
         {product.description}
       </p>
 

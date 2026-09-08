@@ -36,9 +36,9 @@ export function ProductGallery({
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 items-start w-full">
+    <div className="flex flex-col lg:flex-row gap-4 items-start w-full max-w-full">
       {/* Thumbnails: Desktop Left Column (lg:order-1) / Mobile Below Hero (order-2) */}
-      <div className="order-2 lg:order-1 flex lg:flex-col gap-2.5 overflow-x-auto lg:overflow-y-auto pb-1 lg:pb-0 w-full lg:w-20 flex-shrink-0 scrollbar-none">
+      <div className="order-2 lg:order-1 flex lg:flex-col gap-2.5 overflow-x-auto lg:overflow-y-auto pb-1 lg:pb-0 w-full max-w-full lg:w-20 flex-shrink-0 scrollbar-none">
         {images.map((img, idx) => (
           <button
             key={img.url + idx}
@@ -64,7 +64,7 @@ export function ProductGallery({
       </div>
 
       {/* Main Image Container & Certifications: Order 1 on Mobile / Order 2 on Desktop */}
-      <div className="order-1 lg:order-2 flex-1 w-full space-y-3 sm:space-y-4">
+      <div className="order-1 lg:order-2 flex-1 w-full max-w-full space-y-3 sm:space-y-4 overflow-hidden lg:overflow-visible">
         {/* Main Photo with Macro Zoom & Navigation */}
         <div className="relative group">
           <MacroZoomInspector

@@ -38,7 +38,7 @@ export function StoreLayoutShell({ children }: StoreLayoutShellProps) {
       <CartDrawer />
 
       {/* Page content */}
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="flex-1 w-full max-w-full overflow-x-hidden">
         {children}
       </main>
 

@@ -25,10 +25,10 @@ export function AnnouncementBar() {
   if (dismissed) return null;
 
   return (
-    <div className="announcement-bar relative z-50 py-2 overflow-hidden">
-      <div className="flex items-center justify-between px-4">
+    <div className="announcement-bar relative z-50 py-2 w-full max-w-full overflow-hidden select-none">
+      <div className="flex items-center justify-between px-3 sm:px-4 max-w-full overflow-hidden">
         {/* Scrolling marquee */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 min-w-0 overflow-hidden">
           <div className="animate-marquee whitespace-nowrap">
             {[...MESSAGES, ...MESSAGES].map((msg, i) => (
               <span key={i} className="inline-block font-sans text-xs font-medium tracking-wide text-white/95 mx-8">
