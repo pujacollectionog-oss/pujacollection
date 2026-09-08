@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { ProductCard } from '../ui/ProductCard';
 import { useProductStore } from '@/store/useProductStore';
 import { mockProducts } from '@/lib/mock/products';
 
 export function SignaturePiecesTabs() {
   const [hasMounted, setHasMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>('bestsellers');
+  const [activeTab, setActiveTab] = useState<string>('all');
   const { products, syncWithServer } = useProductStore();
 
   useEffect(() => {
@@ -15,33 +16,45 @@ export function SignaturePiecesTabs() {
     syncWithServer();
   }, [syncWithServer]);
 
-  const activeProductList = hasMounted ? products : mockProducts;
-
-  const bestsellers = activeProductList.filter((p) => p.badge === 'Bestseller');
-  const newArrivals = activeProductList.filter((p) => p.badge === 'New');
-  const featured = activeProductList.filter((p) => p.isFeatured).slice(0, 4);
+  const activeProductList = hasMounted && products.length > 0 ? products : mockProducts;
 
   const getTabProducts = () => {
     switch (activeTab) {
-      case 'bestsellers':
-        return bestsellers.length > 0 ? bestsellers : activeProductList.slice(0, 4);
+      case 'sarees':
+        return activeProductList.filter(
+          (p) => p.categorySlug === 'sarees' || p.garmentType === 'SAREE'
+        );
+      case 'lehengas':
+        return activeProductList.filter(
+          (p) => p.categorySlug === 'lehengas' || p.garmentType === 'LEHENGA'
+        );
+      case 'kurtis-suits':
+        return activeProductList.filter(
+          (p) => p.categorySlug === 'kurtis-suits' || p.garmentType === 'KURTI_AND_SUIT'
+        );
       case 'new-arrivals':
-        return newArrivals.length > 0 ? newArrivals : activeProductList.slice(0, 4);
-      case 'trending':
-        return featured.length > 0 ? featured : activeProductList.slice(0, 4);
+        return activeProductList.filter((p) => p.badge === 'New' || p.tags?.includes('new-arrival'));
+      case 'bestsellers':
+        return activeProductList.filter((p) => p.badge === 'Bestseller' || p.isFeatured);
       case 'all':
       default:
-        return activeProductList.slice(0, 8);
+        return activeProductList;
     }
   };
 
   const currentProducts = getTabProducts();
 
+  const newArrivalsCount = activeProductList.filter(
+    (p) => p.badge === 'New' || p.tags?.includes('new-arrival')
+  ).length;
+
   const TABS = [
-    { id: 'bestsellers', label: 'Bestsellers' },
-    { id: 'new-arrivals', label: 'New Arrivals', count: newArrivals.length },
-    { id: 'trending', label: 'Trending' },
     { id: 'all', label: 'All Pieces' },
+    { id: 'sarees', label: 'Sarees' },
+    { id: 'lehengas', label: 'Lehengas' },
+    { id: 'kurtis-suits', label: 'Kurtis & Suits' },
+    { id: 'new-arrivals', label: 'New Arrivals', count: newArrivalsCount },
+    { id: 'bestsellers', label: 'Bestsellers' },
   ];
 
   return (
@@ -105,17 +118,19 @@ export function SignaturePiecesTabs() {
               <div
                 key={product.id}
                 className="animate-fade-in-up"
-                style={{ animationDelay: `${i * 0.07}s` }}
+                style={{ animationDelay: `${i * 0.05}s` }}
               >
-                <ProductCard
-                  product={product}
-                />
+                <ProductCard product={product} />
               </div>
             ))
           ) : (
-            <div className="col-span-full py-16 text-center">
-              <p className="font-display text-lg text-[#8e6f74]">
-                Curating the finest pieces for you…
+            <div className="col-span-full py-16 text-center bg-slate-50 rounded-3xl border border-slate-200">
+              <span className="text-3xl block mb-2">🛍️</span>
+              <p className="font-display text-base font-bold text-[#0f172a]">
+                No pieces found in this category yet
+              </p>
+              <p className="font-sans text-xs text-slate-500 mt-1">
+                Explore our full catalog or check back as we add new handcrafted collections.
               </p>
             </div>
           )}
@@ -123,7 +138,7 @@ export function SignaturePiecesTabs() {
 
         {/* View more */}
         <div className="mt-10 text-center">
-          <a
+          <Link
             href="/collections"
             className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-[#a00041] hover:text-[#c81857] transition-colors border-b border-[rgba(160,0,65,0.3)] pb-0.5"
           >
@@ -131,7 +146,7 @@ export function SignaturePiecesTabs() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
     </section>

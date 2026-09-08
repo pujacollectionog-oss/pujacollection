@@ -21,17 +21,23 @@ export const useProductStore = create<ProductStore>()(
     (set, get) => ({
       products: mockProducts,
 
-      addProduct: (product) => {
+      addProduct: async (product) => {
         set((state) => ({
           products: [product, ...state.products.filter((p) => p.id !== product.id)],
         }));
-        // Sync with server in background
+        // Sync with server
         try {
-          fetch('/api/products', {
+          const res = await fetch('/api/products', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(product),
-          }).catch(() => {});
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.products && Array.isArray(data.products)) {
+              set({ products: data.products });
+            }
+          }
         } catch {}
       },
 

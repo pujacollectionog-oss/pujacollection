@@ -4,6 +4,9 @@ import { BentoGrid } from '@/components/home/BentoGrid';
 import { SignaturePiecesTabs } from '@/components/home/SignaturePiecesTabs';
 import { HeritageStory } from '@/components/home/HeritageStory';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Puja Collection — Luxury Indian Ethnic Wear in Nepal',
   description:

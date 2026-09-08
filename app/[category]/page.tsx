@@ -6,6 +6,9 @@ import { getProductsByCategoryFromDb, getAllProductsFromDb } from '@/lib/db/prod
 import { CategoryHeader } from '@/components/catalog/CategoryHeader';
 import { ProductCatalogView } from '@/components/catalog/ProductCatalogView';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
   params: Promise<{ category: string }>;
 }

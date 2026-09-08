@@ -21,11 +21,14 @@ export function ProductCatalogView({ initialProducts, categorySlug }: ProductCat
   }, [syncWithServer]);
 
   const activeProducts = useMemo(() => {
-    const list = categorySlug === 'collections'
-      ? products
-      : products.filter((p) => p.categorySlug === categorySlug);
-    return list;
-  }, [hasMounted, products, categorySlug, initialProducts]);
+    const list = products && products.length > 0 ? products : initialProducts;
+    if (categorySlug === 'collections') return list;
+    return list.filter(
+      (p) =>
+        p.categorySlug === categorySlug ||
+        p.garmentType?.toLowerCase() === categorySlug.toLowerCase()
+    );
+  }, [products, categorySlug, initialProducts]);
 
   // Sort Logic
   const sortedProducts = useMemo(() => {
