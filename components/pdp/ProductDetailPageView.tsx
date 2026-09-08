@@ -73,29 +73,29 @@ export function ProductDetailPageView({ initialProduct, slug }: ProductDetailPag
     .slice(0, 4);
 
   return (
-    <div className="bg-[#f9f9f6] min-h-screen py-8 md:py-12 animate-fade-in">
+    <div className="bg-[#f9f9f6] min-h-screen py-4 sm:py-8 md:py-12 animate-fade-in">
       <div className="container-luxury">
         {/* Breadcrumbs */}
-        <nav aria-label="Breadcrumb" className="mb-6">
-          <ol className="flex items-center gap-2 font-sans text-xs text-[#8e6f74]">
+        <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6">
+          <ol className="flex items-center gap-1.5 font-sans text-[11px] sm:text-xs text-[#8e6f74] flex-wrap">
             <li>
-              <Link href="/" className="hover:text-[#a00041] transition-colors">Home</Link>
+              <Link href="/" className="hover:text-[#a00041] transition-colors whitespace-nowrap">Home</Link>
             </li>
-            <li>/</li>
+            <li className="text-slate-300">/</li>
             <li>
-              <Link href={`/${product.categorySlug}`} className="hover:text-[#a00041] transition-colors capitalize">
+              <Link href={`/${product.categorySlug}`} className="hover:text-[#a00041] transition-colors capitalize whitespace-nowrap">
                 {product.categorySlug.replace('-', ' ')}
               </Link>
             </li>
-            <li>/</li>
-            <li className="font-semibold text-[#1a1c1b] truncate max-w-[200px] sm:max-w-none" aria-current="page">
+            <li className="text-slate-300">/</li>
+            <li className="font-semibold text-[#1a1c1b] truncate max-w-[160px] sm:max-w-md" aria-current="page">
               {product.name}
             </li>
           </ol>
         </nav>
 
         {/* Main Product Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
           {/* Left: Gallery with 4K Macro Zoom (7 cols) */}
           <div className="lg:col-span-7">
             <ProductGallery

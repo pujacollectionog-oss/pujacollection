@@ -9,7 +9,7 @@ export function WhatsAppButton() {
   return (
     <aside
       aria-label="WhatsApp customer support"
-      className="fixed bottom-6 right-6 z-50 flex items-center group"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center group"
     >
       {/* Tooltip badge */}
       <div
@@ -36,7 +36,7 @@ export function WhatsAppButton() {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         aria-label={`Chat with Puja Collection on WhatsApp (${STORE_PHONE_DISPLAY})`}
-        className="relative w-14 h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white flex items-center justify-center shadow-[0_8px_24px_rgba(37,211,102,0.4)] hover:shadow-[0_12px_32px_rgba(37,211,102,0.6)] hover:scale-105 active:scale-95 transition-all duration-200"
+        className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white flex items-center justify-center shadow-[0_6px_20px_rgba(37,211,102,0.35)] hover:shadow-[0_12px_32px_rgba(37,211,102,0.6)] hover:scale-105 active:scale-95 transition-all duration-200"
       >
         {/* Pulsing ring */}
         <span className="absolute -inset-1 rounded-full bg-[#25D366] opacity-30 animate-pulse pointer-events-none" />

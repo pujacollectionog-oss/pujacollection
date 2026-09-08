@@ -38,11 +38,11 @@ export function MacroZoomInspector({
     <div className="relative flex flex-col gap-3 select-none">
       {/* Badge Indicator */}
       <div className="flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#735c00] bg-[rgba(115,92,0,0.08)] px-2.5 py-1 rounded-full border border-[rgba(115,92,0,0.2)]">
+        <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#735c00] bg-[rgba(115,92,0,0.08)] px-2.5 py-1 rounded-full border border-[rgba(115,92,0,0.2)]">
           <span className="w-1.5 h-1.5 rounded-full bg-[#735c00] animate-pulse" />
           4K Zari &amp; Weave Macro Inspector
         </span>
-        <span className="text-[11px] font-sans text-[#8e6f74] hidden sm:inline">
+        <span className="text-[10px] sm:text-[11px] font-sans text-[#8e6f74] hidden sm:inline">
           Hover image to inspect weave
         </span>
       </div>
@@ -53,12 +53,13 @@ export function MacroZoomInspector({
         onMouseEnter={() => setIsZooming(true)}
         onMouseLeave={() => setIsZooming(false)}
         onMouseMove={handleMouseMove}
-        className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-[#f4f4f1] border border-[rgba(115,92,0,0.2)] cursor-crosshair shadow-md"
+        className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-[#f4f4f1] border border-[rgba(115,92,0,0.2)] cursor-crosshair shadow-sm"
       >
         <Image
           src={imageUrl}
           alt={altText}
           fill
+          unoptimized
           priority
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 50vw"
