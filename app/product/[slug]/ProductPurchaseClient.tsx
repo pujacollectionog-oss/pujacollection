@@ -207,20 +207,20 @@ export function ProductPurchaseClient({ product }: ProductPurchaseClientProps) {
             ⚠️ Size {selectedVariant?.size || selectedVariant?.title} is currently Sold Out. Please choose another size or contact our Rangeli Atelier.
           </div>
         ) : (
-          <div className="flex gap-3">
+          <div className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-3 items-stretch">
             {/* Quantity Counter */}
-            <div className="flex items-center border border-[rgba(226,190,194,0.8)] rounded-xl bg-white overflow-hidden shadow-sm">
+            <div className="flex items-center border border-[rgba(226,190,194,0.8)] rounded-xl bg-white overflow-hidden shadow-xs h-11 flex-shrink-0">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-11 flex items-center justify-center text-sm font-bold text-[#5a4044] hover:bg-[#f4f4f1] cursor-pointer"
+                className="w-8 sm:w-10 h-full flex items-center justify-center text-sm font-bold text-[#5a4044] hover:bg-[#f4f4f1] cursor-pointer"
               >
                 −
               </button>
-              <span className="w-8 text-center text-xs font-bold text-[#1a1c1b]">{quantity}</span>
+              <span className="w-7 sm:w-8 text-center text-xs font-bold text-[#1a1c1b]">{quantity}</span>
               <button
                 onClick={() => setQuantity(Math.min(availableStock, quantity + 1))}
                 disabled={quantity >= availableStock}
-                className="w-10 h-11 flex items-center justify-center text-sm font-bold text-[#5a4044] hover:bg-[#f4f4f1] cursor-pointer disabled:opacity-40"
+                className="w-8 sm:w-10 h-full flex items-center justify-center text-sm font-bold text-[#5a4044] hover:bg-[#f4f4f1] cursor-pointer disabled:opacity-40"
               >
                 +
               </button>
@@ -230,7 +230,7 @@ export function ProductPurchaseClient({ product }: ProductPurchaseClientProps) {
             <Button
               variant="secondary"
               size="lg"
-              className="flex-1 cursor-pointer !border-[#c81857] !text-[#c81857] hover:!bg-[rgba(200,24,87,0.06)]"
+              className="flex-1 min-w-[105px] !text-xs sm:!text-sm !h-11 font-bold cursor-pointer !border-[#c81857] !text-[#c81857] hover:!bg-[rgba(200,24,87,0.06)]"
               onClick={handleAddToCart}
             >
               Add to Bag
@@ -240,7 +240,7 @@ export function ProductPurchaseClient({ product }: ProductPurchaseClientProps) {
             <Button
               variant="primary"
               size="lg"
-              className="flex-1 cursor-pointer !bg-[#b45309] hover:!bg-[#92400e] shadow-md hover:shadow-lg"
+              className="flex-1 min-w-[105px] !text-xs sm:!text-sm !h-11 font-bold cursor-pointer !bg-[#b45309] hover:!bg-[#92400e] shadow-sm hover:shadow-md"
               onClick={handleBuyNow}
             >
               ⚡ Buy Now
@@ -250,11 +250,11 @@ export function ProductPurchaseClient({ product }: ProductPurchaseClientProps) {
             <button
               onClick={() => toggleWishlist(product.id)}
               aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-              className="w-12 h-12 flex items-center justify-center rounded-xl border border-[rgba(226,190,194,0.8)] bg-white hover:bg-[#f4f4f1] transition-colors cursor-pointer shadow-sm"
+              className="w-11 h-11 flex items-center justify-center rounded-xl border border-[rgba(226,190,194,0.8)] bg-white hover:bg-[#f4f4f1] transition-colors cursor-pointer shadow-xs flex-shrink-0"
             >
               <svg
-                width="20"
-                height="20"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill={wishlisted ? '#c81857' : 'none'}
                 stroke={wishlisted ? '#c81857' : '#055858'}
