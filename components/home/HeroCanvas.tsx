@@ -12,18 +12,19 @@ export function HeroCanvas() {
       aria-label="Hero — Puja Collection"
     >
       {/* Background Image */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0">
         <Image
           src="/images/hero-section.png"
           alt="Puja Collection — Luxury Indian Ethnic Wear in Nepal"
           fill
+          unoptimized
           priority
-          className="object-cover"
+          className="object-cover object-[72%_center] sm:object-center lg:object-[80%_center]"
           sizes="100vw"
         />
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[rgba(26,28,27,0.92)] via-[rgba(26,28,27,0.60)] to-[rgba(26,28,27,0.15)]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(26,28,27,0.7)] via-transparent to-transparent" />
+        {/* Multi-Layer Cinematic Luxury Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1a120b]/95 via-[#1a120b]/65 to-black/35 lg:bg-gradient-to-r lg:from-[#1a120b]/92 lg:via-[#1a120b]/55 lg:to-transparent" />
+        <div className="absolute inset-0 bg-radial from-transparent to-black/30" />
       </div>
 
       {/* Decorative gold lines */}
