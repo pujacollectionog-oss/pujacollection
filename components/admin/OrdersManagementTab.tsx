@@ -13,6 +13,7 @@ const STATUS_FILTERS: { id: string; label: string; countId?: AtelierOrderStatus 
   { id: 'PACKAGING', label: '🎁 Packaging', countId: 'PACKAGING' },
   { id: 'OUT_FOR_DELIVERY', label: '🚚 In Transit', countId: 'OUT_FOR_DELIVERY' },
   { id: 'DELIVERED', label: '🏠 Delivered', countId: 'DELIVERED' },
+  { id: 'CANCELLED', label: '❌ Cancelled', countId: 'CANCELLED' },
 ];
 
 export function OrdersManagementTab() {
@@ -80,6 +81,13 @@ export function OrdersManagementTab() {
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
             <span>🏠</span>
             <span>Delivered</span>
+          </span>
+        );
+      case 'CANCELLED':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200 whitespace-nowrap">
+            <span>❌</span>
+            <span>Cancelled</span>
           </span>
         );
       default:

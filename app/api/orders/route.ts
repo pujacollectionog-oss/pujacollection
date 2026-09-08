@@ -335,18 +335,214 @@ export async function PATCH(req: Request) {
     const isAdmin = await verifyAdminRequest();
     if (!isAdmin) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized: Admin session required to update order status.' },
+        { success: false, error: 'Unauthorized: Admin session required to update orders.' },
         { status: 401 }
       );
     }
 
-    const { orderId, status, courierPartner, consignmentId } = await req.json();
+    const body = await req.json();
+    const { action, orderId, item, itemId, status, courierPartner, consignmentId } = body;
 
     if (!orderId) {
       return NextResponse.json(
         { success: false, error: 'Order ID is required.' },
         { status: 400 }
       );
+    }
+
+    // 1. ACTION: ADD ITEM TO EXISTING ORDER
+    if (action === 'ADD_ITEM') {
+      if (!item || !item.name || !item.price) {
+        return NextResponse.json(
+          { success: false, error: 'Item name and valid price are required to add product to order.' },
+          { status: 400 }
+        );
+      }
+
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { items: true },
+      });
+
+      if (!order) {
+        return NextResponse.json(
+          { success: false, error: `Order #${orderId} not found.` },
+          { status: 404 }
+        );
+      }
+
+      const itemQty = Math.max(1, Number(item.quantity) || 1);
+      const itemPrice = Math.max(0, Number(item.price) || 0);
+
+      // Create new OrderItem
+      await prisma.orderItem.create({
+        data: {
+          orderId,
+          productId: item.productId || 'custom-item',
+          variantId: item.variantId || null,
+          name: String(item.name).trim(),
+          price: itemPrice,
+          image: item.image || '/images/hero-lehenga.jpg',
+          quantity: itemQty,
+          size: item.size || 'Standard',
+          colorName: item.colorName || '',
+        },
+      });
+
+      // Recalculate Subtotal and Total
+      const updatedItems = await prisma.orderItem.findMany({ where: { orderId } });
+      const newSubtotal = updatedItems.reduce((sum, it) => sum + it.price * it.quantity, 0);
+      const newTotal = Math.max(0, newSubtotal - order.discountNPR + order.deliveryFeeNPR);
+
+      const updatedOrder = await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          subtotalNPR: newSubtotal,
+          totalAmountNPR: newTotal,
+        },
+        include: { items: true },
+      });
+
+      // Decrement stock for variant if specified
+      if (item.variantId) {
+        try {
+          const variant = await prisma.productVariant.findUnique({ where: { id: item.variantId } });
+          if (variant) {
+            await prisma.productVariant.update({
+              where: { id: item.variantId },
+              data: { stockQuantity: Math.max(0, variant.stockQuantity - itemQty) },
+            });
+          }
+        } catch (stockErr) {
+          console.error('Failed to decrement stock on adding item:', stockErr);
+        }
+      }
+
+      recordAuditLog({
+        eventType: 'ORDER_UPDATED',
+        actor: 'Store Owner',
+        ipAddress: 'Admin Session',
+        details: `Added item "${item.name}" (Qty: ${itemQty}, Price: NPR ${itemPrice.toLocaleString()}) to Order #${orderId}. New Total: NPR ${newTotal.toLocaleString()}`,
+        severity: 'INFO',
+      });
+
+      return NextResponse.json({ success: true, order: updatedOrder });
+    }
+
+    // 2. ACTION: REMOVE ITEM FROM EXISTING ORDER
+    if (action === 'REMOVE_ITEM') {
+      if (!itemId) {
+        return NextResponse.json(
+          { success: false, error: 'Item ID is required to remove item from order.' },
+          { status: 400 }
+        );
+      }
+
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { items: true },
+      });
+
+      if (!order) {
+        return NextResponse.json(
+          { success: false, error: `Order #${orderId} not found.` },
+          { status: 404 }
+        );
+      }
+
+      const targetItem = order.items.find((it) => it.id === itemId);
+      if (!targetItem) {
+        return NextResponse.json(
+          { success: false, error: 'Item not found in this order.' },
+          { status: 404 }
+        );
+      }
+
+      if (order.items.length <= 1) {
+        return NextResponse.json(
+          { success: false, error: 'Cannot remove the last remaining item. Cancel the order instead if needed.' },
+          { status: 400 }
+        );
+      }
+
+      // Delete the OrderItem
+      await prisma.orderItem.delete({ where: { id: itemId } });
+
+      // Restore stock for variant if exists
+      if (targetItem.variantId) {
+        try {
+          await prisma.productVariant.update({
+            where: { id: targetItem.variantId },
+            data: { stockQuantity: { increment: targetItem.quantity } },
+          });
+        } catch {}
+      }
+
+      // Recalculate Subtotal and Total
+      const remainingItems = await prisma.orderItem.findMany({ where: { orderId } });
+      const newSubtotal = remainingItems.reduce((sum, it) => sum + it.price * it.quantity, 0);
+      const newTotal = Math.max(0, newSubtotal - order.discountNPR + order.deliveryFeeNPR);
+
+      const updatedOrder = await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          subtotalNPR: newSubtotal,
+          totalAmountNPR: newTotal,
+        },
+        include: { items: true },
+      });
+
+      recordAuditLog({
+        eventType: 'ORDER_UPDATED',
+        actor: 'Store Owner',
+        ipAddress: 'Admin Session',
+        details: `Removed item "${targetItem.name}" (Qty: ${targetItem.quantity}) from Order #${orderId}. New Total: NPR ${newTotal.toLocaleString()}`,
+        severity: 'INFO',
+      });
+
+      return NextResponse.json({ success: true, order: updatedOrder });
+    }
+
+    // 3. ACTION: UPDATE ORDER STATUS / COURIER
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!existingOrder) {
+      return NextResponse.json(
+        { success: false, error: `Order #${orderId} not found.` },
+        { status: 404 }
+      );
+    }
+
+    // If order is being cancelled, restore product stock
+    if (status === 'CANCELLED' && existingOrder.status !== 'CANCELLED') {
+      for (const it of existingOrder.items) {
+        if (it.variantId) {
+          try {
+            await prisma.productVariant.update({
+              where: { id: it.variantId },
+              data: { stockQuantity: { increment: it.quantity } },
+            });
+          } catch {}
+        }
+      }
+    } else if (existingOrder.status === 'CANCELLED' && status && status !== 'CANCELLED') {
+      // Re-activating a cancelled order: decrement stock again
+      for (const it of existingOrder.items) {
+        if (it.variantId) {
+          try {
+            const variant = await prisma.productVariant.findUnique({ where: { id: it.variantId } });
+            if (variant) {
+              await prisma.productVariant.update({
+                where: { id: it.variantId },
+                data: { stockQuantity: Math.max(0, variant.stockQuantity - it.quantity) },
+              });
+            }
+          } catch {}
+        }
+      }
     }
 
     const updated = await prisma.order.update({
@@ -360,20 +556,99 @@ export async function PATCH(req: Request) {
     });
 
     recordAuditLog({
-      eventType: 'ORDER_STATUS_CHANGED',
+      eventType: status === 'CANCELLED' ? 'ORDER_CANCELLED' : 'ORDER_STATUS_CHANGED',
       actor: 'Store Owner',
       ipAddress: 'Admin Session',
-      details: `Order #${orderId} status advanced to "${status || 'Updated'}"${
+      details: `Order #${orderId} status set to "${status || 'Updated'}"${
         consignmentId ? ` (Consignment: ${consignmentId})` : ''
       }`,
-      severity: 'INFO',
+      severity: status === 'CANCELLED' ? 'WARNING' : 'INFO',
     });
 
     return NextResponse.json({ success: true, order: updated });
   } catch (err: unknown) {
-    console.error('Error updating order status:', err);
+    console.error('Error updating order:', err);
     return NextResponse.json(
-      { success: false, error: 'Failed to update order status.' },
+      { success: false, error: 'Failed to update order in database.' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const isAdmin = await verifyAdminRequest();
+    if (!isAdmin) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Admin session required to delete orders.' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(req.url);
+    let orderId = searchParams.get('orderId')?.trim();
+
+    if (!orderId) {
+      try {
+        const body = await req.json();
+        orderId = body?.orderId?.trim();
+      } catch {}
+    }
+
+    if (!orderId) {
+      return NextResponse.json(
+        { success: false, error: 'Order ID is required to delete order.' },
+        { status: 400 }
+      );
+    }
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      return NextResponse.json(
+        { success: false, error: `Order #${orderId} not found.` },
+        { status: 404 }
+      );
+    }
+
+    // If order was not cancelled, restore inventory stock before deleting
+    if (order.status !== 'CANCELLED') {
+      for (const it of order.items) {
+        if (it.variantId) {
+          try {
+            await prisma.productVariant.update({
+              where: { id: it.variantId },
+              data: { stockQuantity: { increment: it.quantity } },
+            });
+          } catch {}
+        }
+      }
+    }
+
+    // Delete the order (Prisma schema cascades to delete OrderItem records)
+    await prisma.order.delete({
+      where: { id: orderId },
+    });
+
+    recordAuditLog({
+      eventType: 'ORDER_DELETED',
+      actor: 'Store Owner',
+      ipAddress: 'Admin Session',
+      details: `Permanently deleted Order #${orderId} for customer "${order.customerName}" (Total: NPR ${order.totalAmountNPR.toLocaleString()}).`,
+      severity: 'WARNING',
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: `Order #${orderId} deleted successfully.`,
+    });
+  } catch (err: unknown) {
+    console.error('Error deleting order:', err);
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete order from database.' },
       { status: 500 }
     );
   }

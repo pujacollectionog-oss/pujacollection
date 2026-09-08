@@ -10,7 +10,8 @@ export type AtelierOrderStatus =
   | 'QUALITY_CHECK'
   | 'PACKAGING'
   | 'OUT_FOR_DELIVERY'
-  | 'DELIVERED';
+  | 'DELIVERED'
+  | 'CANCELLED';
 
 export interface OrderRecord {
   orderId: string;
@@ -178,11 +179,26 @@ const SEED_ORDERS: OrderRecord[] = [
   },
 ];
 
+export interface AddOrderItemPayload {
+  productId?: string;
+  variantId?: string;
+  name: string;
+  price: number;
+  quantity: number;
+  size?: string;
+  colorName?: string;
+  image?: string;
+}
+
 interface OrderStore {
   orders: OrderRecord[];
   currentOrder: OrderRecord | null;
   addOrder: (order: OrderRecord) => void;
   updateOrderStatus: (orderId: string, status: AtelierOrderStatus) => void;
+  addItemToOrder: (orderId: string, item: AddOrderItemPayload) => Promise<{ success: boolean; error?: string }>;
+  removeItemFromOrder: (orderId: string, itemId: string) => Promise<{ success: boolean; error?: string }>;
+  cancelOrder: (orderId: string) => Promise<{ success: boolean; error?: string }>;
+  deleteOrder: (orderId: string) => Promise<{ success: boolean; error?: string }>;
   syncOrdersWithServer: () => Promise<void>;
   getOrderById: (orderId: string) => OrderRecord | undefined;
   getOrderBySearch: (query: string) => OrderRecord | undefined;
@@ -265,6 +281,90 @@ export const useOrderStore = create<OrderStore>()(
             body: JSON.stringify({ orderId, status }),
           }).catch(() => {});
         } catch {}
+      },
+
+      addItemToOrder: async (orderId, item) => {
+        try {
+          const res = await fetch('/api/orders', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'ADD_ITEM',
+              orderId,
+              item,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            return { success: false, error: data.error || 'Failed to add product to order.' };
+          }
+          await get().syncOrdersWithServer();
+          return { success: true };
+        } catch {
+          return { success: false, error: 'Network error adding product.' };
+        }
+      },
+
+      removeItemFromOrder: async (orderId, itemId) => {
+        try {
+          const res = await fetch('/api/orders', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'REMOVE_ITEM',
+              orderId,
+              itemId,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            return { success: false, error: data.error || 'Failed to remove item.' };
+          }
+          await get().syncOrdersWithServer();
+          return { success: true };
+        } catch {
+          return { success: false, error: 'Network error removing item.' };
+        }
+      },
+
+      cancelOrder: async (orderId) => {
+        try {
+          const res = await fetch('/api/orders', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId,
+              status: 'CANCELLED',
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            return { success: false, error: data.error || 'Failed to cancel order.' };
+          }
+          get().updateOrderStatus(orderId, 'CANCELLED');
+          await get().syncOrdersWithServer();
+          return { success: true };
+        } catch {
+          return { success: false, error: 'Network error cancelling order.' };
+        }
+      },
+
+      deleteOrder: async (orderId) => {
+        try {
+          const res = await fetch(`/api/orders?orderId=${encodeURIComponent(orderId)}`, {
+            method: 'DELETE',
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            return { success: false, error: data.error || 'Failed to delete order.' };
+          }
+          set((state) => ({
+            orders: state.orders.filter((o) => o.orderId !== orderId),
+          }));
+          return { success: true };
+        } catch {
+          return { success: false, error: 'Network error deleting order.' };
+        }
       },
 
       syncOrdersWithServer: async () => {
