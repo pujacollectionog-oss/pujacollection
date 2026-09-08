@@ -8,7 +8,10 @@ export type AuditEventType =
   | 'PRODUCT_ADDED'
   | 'PRODUCT_DELETED'
   | 'STOCK_UPDATED'
-  | 'ORDER_STATUS_CHANGED';
+  | 'ORDER_STATUS_CHANGED'
+  | 'ORDER_UPDATED'
+  | 'ORDER_CANCELLED'
+  | 'ORDER_DELETED';
 
 export interface AuditLogEntry {
   id: string;
