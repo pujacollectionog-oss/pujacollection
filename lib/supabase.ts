@@ -1,16 +1,27 @@
 import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ivdrxnimgpwsptdjcwgr.supabase.co';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const DEFAULT_SUPABASE_URL = 'https://ivdrxnimgpwsptdjcwgr.supabase.co';
+const DEFAULT_SERVICE_ROLE_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2ZHJ4bmltZ3B3c3B0ZGpjd2dyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODY4NjcxNywiZXhwIjoyMTA0MjYyNzE3fQ.IxWh0zoTG4INxEceYexMzd38MsBxlJELyyrtT_Cgo4k';
 
-export const supabase = supabaseKey
-  ? createClient(supabaseUrl, supabaseKey, {
-      auth: {
-        persistSession: false,
-      },
-    })
-  : null;
+export function getSupabaseAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    DEFAULT_SERVICE_ROLE_KEY;
+
+  if (!url || !key) return null;
+
+  return createClient(url, key, {
+    auth: {
+      persistSession: false,
+    },
+  });
+}
+
+export const supabase = getSupabaseAdminClient();
 
 export interface SupabaseUploadResult {
   publicUrl: string | null;
@@ -28,15 +39,16 @@ export async function uploadImageToSupabase(
   contentType: string,
   bucketName = 'products'
 ): Promise<SupabaseUploadResult> {
-  if (!supabase) {
+  const client = getSupabaseAdminClient();
+  if (!client) {
     return {
       publicUrl: null,
-      error: 'Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in environment variables.',
+      error: 'Supabase client could not be initialized.',
     };
   }
 
   try {
-    let { data, error } = await supabase.storage
+    let { data, error } = await client.storage
       .from(bucketName)
       .upload(fileName, fileBuffer, {
         contentType,
@@ -44,15 +56,19 @@ export async function uploadImageToSupabase(
       });
 
     // If bucket doesn't exist, try creating it (works with service_role key)
-    if (error && (error.message.toLowerCase().includes('bucket not found') || error.message.toLowerCase().includes('does not exist'))) {
+    if (
+      error &&
+      (error.message.toLowerCase().includes('bucket not found') ||
+        error.message.toLowerCase().includes('does not exist'))
+    ) {
       try {
-        const { error: createBucketError } = await supabase.storage.createBucket(bucketName, {
+        const { error: createBucketError } = await client.storage.createBucket(bucketName, {
           public: true,
           fileSizeLimit: 10485760, // 10MB
         });
         if (!createBucketError) {
           // Retry upload
-          const retry = await supabase.storage
+          const retry = await client.storage
             .from(bucketName)
             .upload(fileName, fileBuffer, {
               contentType,
@@ -75,7 +91,7 @@ export async function uploadImageToSupabase(
       return { publicUrl: null, error: 'Upload returned no file path.' };
     }
 
-    const { data: publicUrlData } = supabase.storage
+    const { data: publicUrlData } = client.storage
       .from(bucketName)
       .getPublicUrl(data.path);
 
