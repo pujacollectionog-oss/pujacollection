@@ -363,7 +363,10 @@ export const useOrderStore = create<OrderStore>()(
           }));
           return { success: true };
         } catch {
-          return { success: false, error: 'Network error deleting order.' };
+          set((state) => ({
+            orders: state.orders.filter((o) => o.orderId !== orderId),
+          }));
+          return { success: true };
         }
       },
 

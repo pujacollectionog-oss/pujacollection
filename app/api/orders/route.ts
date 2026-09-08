@@ -608,10 +608,12 @@ export async function DELETE(req: Request) {
     });
 
     if (!order) {
-      return NextResponse.json(
-        { success: false, error: `Order #${orderId} not found.` },
-        { status: 404 }
-      );
+      // If the order was a seed/demo order in localStorage or already removed from DB,
+      // return success so the client removes it cleanly without error
+      return NextResponse.json({
+        success: true,
+        message: `Order #${orderId} cleared successfully.`,
+      });
     }
 
     // If order was not cancelled, restore inventory stock before deleting
@@ -647,8 +649,9 @@ export async function DELETE(req: Request) {
     });
   } catch (err: unknown) {
     console.error('Error deleting order:', err);
+    const errorMsg = err instanceof Error ? err.message : 'Database error';
     return NextResponse.json(
-      { success: false, error: 'Failed to delete order from database.' },
+      { success: false, error: `Failed to delete order: ${errorMsg}` },
       { status: 500 }
     );
   }
