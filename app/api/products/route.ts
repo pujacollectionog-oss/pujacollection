@@ -44,8 +44,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, products: updatedList });
   } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Database error';
+    console.error('Error adding product to database:', err);
     return NextResponse.json(
-      { success: false, error: 'Failed to add product to database.' },
+      { success: false, error: `Failed to add product to database: ${errorMsg}` },
       { status: 500 }
     );
   }

@@ -51,6 +51,8 @@ export function InventoryTab() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [isSuccessToast, setIsSuccessToast] = useState(false);
+  const [isSavingProduct, setIsSavingProduct] = useState(false);
+  const [productFormError, setProductFormError] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -206,7 +208,7 @@ export function InventoryTab() {
     });
   };
 
-  const handleAddProduct = (e: React.FormEvent) => {
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim() || !newPrice.trim()) return;
 
@@ -226,7 +228,7 @@ export function InventoryTab() {
     }));
 
     const newProd: MockProduct = {
-      id: `p-${Date.now().toString().slice(-4)}`,
+      id: `p-${Date.now().toString().slice(-6)}`,
       name: newName.trim(),
       slug: newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       garmentType: newGarmentType,
@@ -250,7 +252,17 @@ export function InventoryTab() {
       tags: ['new-arrival', newCategory],
     };
 
-    addProduct(newProd);
+    setIsSavingProduct(true);
+    setProductFormError('');
+
+    const res = await addProduct(newProd);
+    setIsSavingProduct(false);
+
+    if (res && res.success === false) {
+      setProductFormError(res.error || 'Failed to save product to database.');
+      return;
+    }
+
     setAddModalOpen(false);
     setNewName('');
     setNewPrice('');
@@ -809,13 +821,23 @@ export function InventoryTab() {
                   className="w-full p-3 rounded-xl border border-slate-300 focus:border-[#be123c] outline-none"
                 />
               </div>
+              {productFormError && (
+                <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-bold animate-fade-in flex items-center justify-between">
+                  <span>⚠️ {productFormError}</span>
+                  <button type="button" onClick={() => setProductFormError('')} className="text-rose-500 hover:text-rose-800 font-bold">✕</button>
+                </div>
+              )}
             </form>
 
             {/* Modal Fixed Footer */}
             <div className="flex items-center justify-end gap-3 px-6 py-4 md:px-8 border-t border-slate-200 bg-slate-50 flex-shrink-0">
               <button
                 type="button"
-                onClick={() => setAddModalOpen(false)}
+                onClick={() => {
+                  setAddModalOpen(false);
+                  setProductFormError('');
+                }}
+                disabled={isSavingProduct}
                 className="py-2.5 px-4 rounded-xl font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 cursor-pointer transition-colors"
               >
                 Cancel
@@ -823,9 +845,17 @@ export function InventoryTab() {
               <button
                 type="submit"
                 form="add-product-form"
-                className="py-2.5 px-6 rounded-xl font-sans text-xs font-bold uppercase tracking-wider bg-[#be123c] text-white hover:bg-[#9f1239] shadow-sm cursor-pointer transition-colors"
+                disabled={isSavingProduct}
+                className="py-2.5 px-6 rounded-xl font-sans text-xs font-bold uppercase tracking-wider bg-[#be123c] text-white hover:bg-[#9f1239] shadow-sm cursor-pointer transition-colors disabled:opacity-60 flex items-center gap-2"
               >
-                Publish &amp; Save Product
+                {isSavingProduct ? (
+                  <>
+                    <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Publishing to Database…</span>
+                  </>
+                ) : (
+                  <span>Publish &amp; Save Product</span>
+                )}
               </button>
             </div>
           </div>

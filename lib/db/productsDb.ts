@@ -158,75 +158,133 @@ export async function getProductsByCategoryFromDb(categorySlug: string): Promise
 }
 
 export async function addProductToDb(product: MockProduct): Promise<MockProduct[]> {
-  await prisma.product.upsert({
-    where: { slug: product.slug },
-    update: {
-      name: product.name,
-      garmentType: product.garmentType,
-      categorySlug: product.categorySlug,
-      subCategorySlug: product.subCategorySlug || null,
-      description: product.description,
-      fabricDetails: product.fabricDetails,
-      fabricType: product.fabricType,
-      craftDetails: product.craftDetails,
-      weaveTechnique: product.weaveTechnique || null,
-      careInstructions: product.careInstructions,
-      silkMarkCertified: product.silkMarkCertified,
-      handloomCertified: product.handloomCertified,
-      occasion: product.occasion,
-      basePrice: product.basePrice,
-      compareAtPrice: product.compareAtPrice || null,
-      isCustomizable: product.isCustomizable,
-      customizationFee: product.customizationFee,
-      isFeatured: product.isFeatured,
-      badge: product.badge || null,
-      tags: product.tags.join(', '),
-    },
-    create: {
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      garmentType: product.garmentType,
-      categorySlug: product.categorySlug,
-      subCategorySlug: product.subCategorySlug || null,
-      description: product.description,
-      fabricDetails: product.fabricDetails,
-      fabricType: product.fabricType,
-      craftDetails: product.craftDetails,
-      weaveTechnique: product.weaveTechnique || null,
-      careInstructions: product.careInstructions,
-      silkMarkCertified: product.silkMarkCertified,
-      handloomCertified: product.handloomCertified,
-      occasion: product.occasion,
-      basePrice: product.basePrice,
-      compareAtPrice: product.compareAtPrice || null,
-      isCustomizable: product.isCustomizable,
-      customizationFee: product.customizationFee,
-      isFeatured: product.isFeatured,
-      badge: product.badge || null,
-      tags: product.tags.join(', '),
-      images: {
-        create: product.images.map((img) => ({
-          url: img.url,
-          altText: img.altText || product.name,
-          isPrimary: img.isPrimary ?? false,
-          macroZoomUrl: img.macroZoomUrl || null,
-        })),
-      },
-      variants: {
-        create: product.variants.map((v) => ({
-          id: v.id,
-          title: v.title,
-          size: v.size || null,
-          colorName: v.colorName || null,
-          colorHex: v.colorHex || null,
-          stockQuantity: v.stockQuantity,
-        })),
-      },
-    },
-  });
+  try {
+    const rawSlug =
+      product.slug ||
+      product.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+    const safeSlug = rawSlug || `prod-${Date.now()}`;
+    const safeTags = Array.isArray(product.tags)
+      ? product.tags.join(', ')
+      : typeof product.tags === 'string'
+      ? product.tags
+      : '';
+    const safeImages =
+      Array.isArray(product.images) && product.images.length > 0
+        ? product.images
+        : [{ url: '/images/hero-lehenga.jpg', altText: product.name, isPrimary: true }];
+    const safeVariants =
+      Array.isArray(product.variants) && product.variants.length > 0
+        ? product.variants
+        : [{ id: `v-${Date.now()}`, title: 'Standard', size: 'Standard', stockQuantity: 5 }];
 
-  return getAllProductsFromDb();
+    // Check if product with this slug or id exists
+    const existing = await prisma.product.findFirst({
+      where: {
+        OR: [{ slug: safeSlug }, product.id ? { id: product.id } : {}],
+      },
+      include: { images: true, variants: true },
+    });
+
+    if (existing) {
+      // Clean up old relations before re-creating
+      await prisma.productImage.deleteMany({ where: { productId: existing.id } });
+      await prisma.productVariant.deleteMany({ where: { productId: existing.id } });
+
+      await prisma.product.update({
+        where: { id: existing.id },
+        data: {
+          name: product.name,
+          garmentType: product.garmentType || 'SAREE',
+          categorySlug: product.categorySlug || 'sarees',
+          subCategorySlug: product.subCategorySlug || null,
+          description: product.description || 'Authentic luxury Indian ethnic wear.',
+          fabricDetails: product.fabricDetails || 'Pure Silk',
+          fabricType: product.fabricType || 'Pure Katan Silk',
+          craftDetails: product.craftDetails || 'Handcrafted traditional artisan weave.',
+          weaveTechnique: product.weaveTechnique || null,
+          careInstructions: product.careInstructions || 'Dry Clean Only',
+          silkMarkCertified: Boolean(product.silkMarkCertified),
+          handloomCertified: Boolean(product.handloomCertified),
+          occasion: product.occasion || 'Bridal',
+          basePrice: Math.max(0, Number(product.basePrice) || 0),
+          compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : null,
+          isCustomizable: Boolean(product.isCustomizable),
+          customizationFee: Number(product.customizationFee) || 0,
+          isFeatured: Boolean(product.isFeatured ?? true),
+          badge: product.badge || null,
+          tags: safeTags,
+          images: {
+            create: safeImages.map((img) => ({
+              url: img.url,
+              altText: img.altText || product.name,
+              isPrimary: Boolean(img.isPrimary),
+              macroZoomUrl: img.macroZoomUrl || null,
+            })),
+          },
+          variants: {
+            create: safeVariants.map((v) => ({
+              title: v.title || v.size || 'Standard',
+              size: v.size || null,
+              colorName: v.colorName || null,
+              colorHex: v.colorHex || null,
+              stockQuantity: Math.max(0, Number(v.stockQuantity) || 0),
+            })),
+          },
+        },
+      });
+    } else {
+      await prisma.product.create({
+        data: {
+          name: product.name,
+          slug: safeSlug,
+          garmentType: product.garmentType || 'SAREE',
+          categorySlug: product.categorySlug || 'sarees',
+          subCategorySlug: product.subCategorySlug || null,
+          description: product.description || 'Authentic luxury Indian ethnic wear.',
+          fabricDetails: product.fabricDetails || 'Pure Silk',
+          fabricType: product.fabricType || 'Pure Katan Silk',
+          craftDetails: product.craftDetails || 'Handcrafted traditional artisan weave.',
+          weaveTechnique: product.weaveTechnique || null,
+          careInstructions: product.careInstructions || 'Dry Clean Only',
+          silkMarkCertified: Boolean(product.silkMarkCertified),
+          handloomCertified: Boolean(product.handloomCertified),
+          occasion: product.occasion || 'Bridal',
+          basePrice: Math.max(0, Number(product.basePrice) || 0),
+          compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : null,
+          isCustomizable: Boolean(product.isCustomizable),
+          customizationFee: Number(product.customizationFee) || 0,
+          isFeatured: Boolean(product.isFeatured ?? true),
+          badge: product.badge || null,
+          tags: safeTags,
+          images: {
+            create: safeImages.map((img) => ({
+              url: img.url,
+              altText: img.altText || product.name,
+              isPrimary: Boolean(img.isPrimary),
+              macroZoomUrl: img.macroZoomUrl || null,
+            })),
+          },
+          variants: {
+            create: safeVariants.map((v) => ({
+              title: v.title || v.size || 'Standard',
+              size: v.size || null,
+              colorName: v.colorName || null,
+              colorHex: v.colorHex || null,
+              stockQuantity: Math.max(0, Number(v.stockQuantity) || 0),
+            })),
+          },
+        },
+      });
+    }
+
+    return getAllProductsFromDb();
+  } catch (err) {
+    console.error('CRITICAL: addProductToDb database error:', err);
+    throw err;
+  }
 }
 
 export async function deleteProductFromDb(id: string): Promise<MockProduct[]> {

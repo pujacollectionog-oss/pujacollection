@@ -6,7 +6,7 @@ import { mockProducts, type MockProduct } from '@/lib/mock/products';
 
 interface ProductStore {
   products: MockProduct[];
-  addProduct: (product: MockProduct) => void;
+  addProduct: (product: MockProduct) => Promise<{ success: boolean; error?: string }>;
   updateProduct: (id: string, updates: Partial<MockProduct>) => void;
   deleteProduct: (id: string) => void;
   updateStock: (productId: string, delta: number) => void;
@@ -22,23 +22,27 @@ export const useProductStore = create<ProductStore>()(
       products: mockProducts,
 
       addProduct: async (product) => {
-        set((state) => ({
-          products: [product, ...state.products.filter((p) => p.id !== product.id)],
-        }));
-        // Sync with server
         try {
           const res = await fetch('/api/products', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(product),
           });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.products && Array.isArray(data.products)) {
-              set({ products: data.products });
-            }
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            return { success: false, error: data.error || 'Failed to save product to database.' };
           }
-        } catch {}
+          if (data.products && Array.isArray(data.products)) {
+            set({ products: data.products });
+          } else {
+            set((state) => ({
+              products: [product, ...state.products.filter((p) => p.id !== product.id)],
+            }));
+          }
+          return { success: true };
+        } catch {
+          return { success: false, error: 'Network connection error while saving product.' };
+        }
       },
 
       updateProduct: (id, updates) => {
