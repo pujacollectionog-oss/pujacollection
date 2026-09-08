@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useProductStore } from '@/store/useProductStore';
 import { useCurrencyStore } from '@/store/useCurrencyStore';
 import { ConfirmDialogModal } from '@/components/ui/ConfirmDialogModal';
+import { EditProductModal } from '@/components/admin/EditProductModal';
 import type { MockProduct } from '@/lib/mock/products';
 
 interface UploadedImageItem {
@@ -27,7 +28,9 @@ export function InventoryTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<MockProduct | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [toastMessage, setToastMessage] = useState('');
 
   // New product form state
   const [newName, setNewName] = useState('');
@@ -269,8 +272,9 @@ export function InventoryTab() {
     setNewComparePrice('');
     setNewDesc('');
     setNewImages([{ url: '/images/hero-lehenga.jpg', altText: 'Primary photo', isPrimary: true }]);
+    setToastMessage('✓ New ensemble with custom sizes & stock successfully published to database!');
     setIsSuccessToast(true);
-    setTimeout(() => setIsSuccessToast(false), 3000);
+    setTimeout(() => setIsSuccessToast(false), 4000);
   };
 
   return (
@@ -278,8 +282,8 @@ export function InventoryTab() {
       {/* Toast Alert */}
       {isSuccessToast && (
         <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold animate-fade-in flex items-center justify-between">
-          <span>✓ New ensemble with custom sizes &amp; stock successfully published to database!</span>
-          <button onClick={() => setIsSuccessToast(false)} className="text-emerald-600 hover:text-emerald-900">✕</button>
+          <span>{toastMessage || '✓ Operation completed successfully!'}</span>
+          <button onClick={() => setIsSuccessToast(false)} className="text-emerald-600 hover:text-emerald-900 cursor-pointer">✕</button>
         </div>
       )}
 
@@ -463,13 +467,23 @@ export function InventoryTab() {
 
                     {/* Action */}
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() => setDeleteTarget({ id: p.id, name: p.name })}
-                        className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
-                        title="Delete product"
-                      >
-                        🗑️
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => setEditTarget(p)}
+                          className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-800 font-bold transition-colors cursor-pointer flex items-center gap-1 border border-slate-200 hover:border-amber-300 shadow-2xs text-[11px]"
+                          title="Edit product details, photos, and stock"
+                        >
+                          <span>✏️</span>
+                          <span className="hidden sm:inline">Edit</span>
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget({ id: p.id, name: p.name })}
+                          className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer border border-slate-200 hover:border-rose-300 shadow-2xs"
+                          title="Delete product"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -861,6 +875,22 @@ export function InventoryTab() {
           </div>
         </div>
       )}
+
+      {/* Edit Product Modal */}
+      <EditProductModal
+        isOpen={Boolean(editTarget)}
+        product={editTarget}
+        onClose={() => setEditTarget(null)}
+        onSave={async (updatedProduct) => {
+          const res = await addProduct(updatedProduct);
+          if (res && res.success) {
+            setToastMessage(`✓ Product "${updatedProduct.name}" successfully updated!`);
+            setIsSuccessToast(true);
+            setTimeout(() => setIsSuccessToast(false), 4000);
+          }
+          return res;
+        }}
+      />
 
       {/* Delete Confirmation Modal */}
       <ConfirmDialogModal

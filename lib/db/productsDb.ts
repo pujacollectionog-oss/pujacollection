@@ -31,12 +31,14 @@ export async function getAllProductsFromDb(): Promise<MockProduct[]> {
       isFeatured: p.isFeatured,
       badge: p.badge || undefined,
       tags: p.tags ? p.tags.split(',').map((t: string) => t.trim()) : [],
-      images: (p.images || []).map((img: any) => ({
-        url: img.url,
-        altText: img.altText,
-        isPrimary: img.isPrimary,
-        macroZoomUrl: img.macroZoomUrl || undefined,
-      })),
+      images: (p.images || [])
+        .map((img: any) => ({
+          url: img.url,
+          altText: img.altText,
+          isPrimary: Boolean(img.isPrimary),
+          macroZoomUrl: img.macroZoomUrl || undefined,
+        }))
+        .sort((a: any, b: any) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0)),
       variants: (p.variants || []).map((v: any) => ({
         id: v.id,
         title: v.title,
@@ -84,12 +86,14 @@ export async function getProductBySlugFromDb(slug: string): Promise<MockProduct 
       isFeatured: p.isFeatured,
       badge: p.badge || undefined,
       tags: p.tags ? p.tags.split(',').map((t: string) => t.trim()) : [],
-      images: (p.images || []).map((img: any) => ({
-        url: img.url,
-        altText: img.altText,
-        isPrimary: img.isPrimary,
-        macroZoomUrl: img.macroZoomUrl || undefined,
-      })),
+      images: (p.images || [])
+        .map((img: any) => ({
+          url: img.url,
+          altText: img.altText,
+          isPrimary: Boolean(img.isPrimary),
+          macroZoomUrl: img.macroZoomUrl || undefined,
+        }))
+        .sort((a: any, b: any) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0)),
       variants: (p.variants || []).map((v: any) => ({
         id: v.id,
         title: v.title,
@@ -136,12 +140,14 @@ export async function getProductsByCategoryFromDb(categorySlug: string): Promise
       isFeatured: p.isFeatured,
       badge: p.badge || undefined,
       tags: p.tags ? p.tags.split(',').map((t: string) => t.trim()) : [],
-      images: (p.images || []).map((img: any) => ({
-        url: img.url,
-        altText: img.altText,
-        isPrimary: img.isPrimary,
-        macroZoomUrl: img.macroZoomUrl || undefined,
-      })),
+      images: (p.images || [])
+        .map((img: any) => ({
+          url: img.url,
+          altText: img.altText,
+          isPrimary: Boolean(img.isPrimary),
+          macroZoomUrl: img.macroZoomUrl || undefined,
+        }))
+        .sort((a: any, b: any) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0)),
       variants: (p.variants || []).map((v: any) => ({
         id: v.id,
         title: v.title,

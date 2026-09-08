@@ -21,9 +21,11 @@ export function ProductCard({ product }: ProductCardProps) {
   const [activeImageIdx, setActiveImageIdx] = useState(0);
 
   const wishlisted = isWishlisted(product.id);
-  const images = product.images && product.images.length > 0
+  const rawImages = product.images && product.images.length > 0
     ? product.images
     : [{ url: '/images/hero-lehenga.jpg', altText: product.name, isPrimary: true }];
+  
+  const images = [...rawImages].sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
   
   const currentImage = images[activeImageIdx] || images[0];
   const defaultVariant = product.variants[0];

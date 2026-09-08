@@ -18,7 +18,11 @@ export function ProductGallery({
   silkMarkCertified,
   handloomCertified,
 }: ProductGalleryProps) {
-  const [selectedIdx, setSelectedIdx] = useState(0);
+  const initialIdx = Math.max(
+    0,
+    images.findIndex((img) => img.isPrimary)
+  );
+  const [selectedIdx, setSelectedIdx] = useState(initialIdx !== -1 ? initialIdx : 0);
   const activeImage = images[selectedIdx] ?? images[0];
 
   return (
