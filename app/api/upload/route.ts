@@ -35,12 +35,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
     const uploadedResults: { url: string; name: string }[] = [];
+    let lastCloudError: string | null = null;
 
     for (const file of files) {
       if (!file || typeof file === 'string') continue;
@@ -77,32 +73,53 @@ export async function POST(req: Request) {
       const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').toLowerCase();
       const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}-${safeName}`;
 
-      // Try uploading to Supabase Storage first
-      let publicUrl: string | null = null;
-      try {
-        publicUrl = await uploadImageToSupabase(
-          buffer,
-          filename,
-          file.type || 'image/jpeg',
-          'products'
-        );
-      } catch (uploadErr) {
-        console.warn('Supabase upload failed, using local disk fallback:', uploadErr);
-      }
+      // 1. Try uploading to Supabase Storage first (primary storage for production/serverless)
+      const { publicUrl, error: supabaseError } = await uploadImageToSupabase(
+        buffer,
+        filename,
+        file.type || 'image/jpeg',
+        'products'
+      );
 
       if (publicUrl) {
         uploadedResults.push({
           url: publicUrl,
           name: file.name,
         });
-      } else {
-        // Fallback to local filesystem
+        continue;
+      }
+
+      if (supabaseError) {
+        lastCloudError = supabaseError;
+        console.warn(`Supabase upload failed for ${file.name}:`, supabaseError);
+      }
+
+      // 2. Fallback to local filesystem (works in local dev environments)
+      try {
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
         const filePath = path.join(uploadDir, filename);
         fs.writeFileSync(filePath, buffer);
         uploadedResults.push({
           url: `/uploads/${filename}`,
           name: file.name,
         });
+      } catch (fsErr: unknown) {
+        const fsErrorMsg = fsErr instanceof Error ? fsErr.message : 'Filesystem write error';
+        console.error('Local filesystem fallback failed (read-only environment):', fsErrorMsg);
+        
+        // Return clear diagnostic error to admin
+        return NextResponse.json(
+          {
+            success: false,
+            error: lastCloudError
+              ? `Cloud storage error: ${lastCloudError}. (Local filesystem is read-only in production. Please check Supabase Storage 'products' bucket and SUPABASE_SERVICE_ROLE_KEY).`
+              : 'Failed to upload image. Cloud storage is not configured and server filesystem is read-only.',
+          },
+          { status: 500 }
+        );
       }
     }
 
@@ -112,9 +129,10 @@ export async function POST(req: Request) {
       url: uploadedResults[0]?.url,
     });
   } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Unknown server error';
     console.error('File Upload Error:', err);
     return NextResponse.json(
-      { success: false, error: 'Failed to upload image file to server.' },
+      { success: false, error: `Upload failed: ${errorMsg}` },
       { status: 500 }
     );
   }
